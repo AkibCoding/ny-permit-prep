@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NY Permit Prep · Free NY learner permit practice test</title>
+<meta name="description" content="Free study guide and practice tests for the New York State learner permit (Class D) written test. 180+ questions, every road sign, chapter quizzes. No sign-up.">
+<meta property="og:title" content="NY Permit Prep">
+<meta property="og:description" content="Free NY learner permit study guide and practice tests. No sign-up.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@700;800&family=Overpass+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="home">
+<div class="hero"><div class="wrap" style="padding-block:40px 34px">
+  <p class="eyebrow">Free · No sign-up · Based on the NYS Driver's Manual</p>
+  <h1>Pass your New York permit test</h1>
+  <p class="lede">Study each chapter in plain English, learn every road sign, and practice with tests scored just like the real DMV test.</p>
+  <div class="btn-row" style="margin-top:8px">
+    <a class="btn" href="tests.html#t1">Take Practice Test 1</a>
+    <a class="btn ghost" href="study.html">Start studying</a>
+  </div>
+</div></div>
+
+<main class="wrap">
+  <section>
+    <h2>The real test at a glance</h2>
+    <div class="facts-strip" style="margin-top:14px">
+      <div class="fact"><b>20</b><span>multiple-choice questions</span></div>
+      <div class="fact"><b>14</b><span>correct to pass</span></div>
+      <div class="fact"><b>2 of 4</b><span>road-sign questions required</span></div>
+      <div class="fact"><b>Ch 4–11</b><span>of the manual are tested</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Everything you need</h2>
+    <div class="grid grid-2" style="margin-top:14px" id="tiles"></div>
+  </section>
+
+  <section class="card">
+    <h2>How to use this site</h2>
+    <ol class="steps" style="margin-top:14px">
+      <li><span><b>Study chapters 4 to 11.</b> Each page takes 20–45 minutes and ends with a short quiz.</span></li>
+      <li><span><b>Learn the road signs.</b> Use flashcard mode until you know them all.</span></li>
+      <li><span><b>Take Practice Tests 1–5</b> (100 different questions). Then keep going with smart random tests that bring back what you missed.</span></li>
+      <li><span><b>The morning of your test,</b> read the cheat sheet once.</span></li>
+    </ol>
+  </section>
+
+  <section id="progress" hidden>
+    <h2>Your progress</h2>
+    <div class="card" style="margin-top:14px;display:grid;gap:10px" id="progressBody"></div>
+  </section>
+</main>
+
+<script src="assets/js/layout.js"></script>
+<script>
+(function () {
+  const NYP = window.NYP, I = NYP.icons;
+  const tiles = [
+    { href: "study.html", icon: I.book, title: "Study guide", text: "Chapters 4–11 in plain English, with diagrams and a quiz for each.", meta: "8 chapters" },
+    { href: "signs.html", icon: I.sign, title: "Road signs", text: "Every sign, signal, lane light, marking and hand signal, with flashcards.", meta: "47 signs" },
+    { href: "tests.html", icon: I.test, title: "Practice tests", text: "5 real-style tests with 100 unique questions, then unlimited smart tests.", meta: "184 questions" },
+    { href: "cheatsheet.html", icon: I.sheet, title: "Cheat sheet", text: "Every number and rule on one page. Read it the morning of your test.", meta: "1 page" }
+  ];
+  document.getElementById("tiles").innerHTML = tiles.map((t) =>
+    '<a class="tile" href="' + t.href + '"><span class="icon">' + t.icon + "</span><h3>" + t.title + "</h3><p>" + t.text + '</p><span class="meta">' + t.meta + "</span></a>").join("");
+
+  const p = NYP.store.get();
+  const chDone = Object.keys(p.chapters).length;
+  const testsDone = [1, 2, 3, 4, 5].filter((t) => p.tests["t" + t]);
+  if (chDone || testsDone.length) {
+    document.getElementById("progress").hidden = false;
+    const best = testsDone.map((t) => p.tests["t" + t].best);
+    document.getElementById("progressBody").innerHTML =
+      "<p><b>Chapter quizzes taken:</b> " + chDone + " of 8</p>" +
+      "<p><b>Practice tests taken:</b> " + testsDone.length + " of 5" + (best.length ? " · best score " + Math.max.apply(null, best) + "/20" : "") + "</p>" +
+      '<div class="btn-row"><a class="btn small" href="' + (testsDone.length < 5 ? "tests.html#t" + (testsDone.length + 1) : "tests.html#smart") + '">' + (testsDone.length < 5 ? "Continue: Test " + (testsDone.length + 1) : "Smart random test") + "</a>" +
+      '<button type="button" class="btn ghost small" id="resetBtn">Reset my progress</button></div>' +
+      '<p class="muted" style="font-size:14px">Progress is saved only in this browser. Nothing is sent anywhere.</p>';
+    const rb = document.getElementById("resetBtn");
+    rb.addEventListener("click", () => {
+      if (rb.dataset.confirm) { NYP.store.reset(); location.reload(); return; }
+      rb.dataset.confirm = "1"; rb.textContent = "Tap again to erase everything";
+    });
+  }
+})();
+</script>
+</body>
+</html>

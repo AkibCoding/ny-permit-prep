@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About · NY Permit Prep</title>
+<meta name="description" content="About NY Permit Prep: a free, no-sign-up study tool for the New York learner permit test.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@700;800&family=Overpass+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="about">
+<div class="hero"><div class="wrap">
+  <p class="eyebrow">About</p>
+  <h1>Free, simple, and made to help you pass</h1>
+  <p class="lede">NY Permit Prep started as one student's study notes for the Buffalo DMV permit test. It worked, so it became a free site for everyone.</p>
+</div></div>
+
+<main class="wrap">
+  <section class="card">
+    <h2>What this site is</h2>
+    <ul class="key-list" style="margin-top:14px">
+      <li><b>Free and open to everyone.</b> No account, no email, no ads.</li>
+      <li><b>Based on the official NYS Driver's Manual (MV-21).</b> Every question shows the manual page it comes from, so you can check it yourself.</li>
+      <li><b>Not the DMV.</b> This site is not affiliated with or endorsed by the New York State Department of Motor Vehicles. Rules can change, so always check the <a href="https://dmv.ny.gov/new-york-state-drivers-manual-practice-tests" rel="noopener">official manual and DMV practice quizzes</a>.</li>
+      <li><b>Questions are written for this site.</b> They're worded like real test questions, but they are not copies of the DMV's test.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="privacy">
+    <h2>Privacy</h2>
+    <p class="muted" style="margin-top:10px">Your quiz scores and missed questions are saved only in your own browser (local storage) so you can pick up where you left off. Nothing is sent to a server. Clearing your browser data, or using "Reset my progress" on the home page, erases it.</p>
+  </section>
+
+  <section class="card" id="donate">
+    <h2>Support this site</h2>
+    <p class="muted" style="margin:10px 0 14px">The site is free and will stay free. If it helped you pass and you'd like to say thanks, you can chip in toward hosting and updates. It's completely optional.</p>
+    <div id="donateBox"></div>
+  </section>
+
+  <section class="card">
+    <h2>Found a mistake?</h2>
+    <p class="muted" style="margin-top:10px">If a question or rule looks wrong or out of date, please report it on the project's GitHub page so it can be fixed for everyone.</p>
+    <p style="margin-top:10px" id="repoLink"></p>
+  </section>
+</main>
+
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/config.js"></script>
+<script>
+(function () {
+  const C = window.NYP_CONFIG || {};
+  const box = document.getElementById("donateBox");
+  const links = (C.donate || []).filter((d) => d.url || d.handle);
+  if (!links.length) {
+    box.innerHTML = '<p class="callout">Donations aren’t set up yet. Thanks for thinking of it!</p>';
+  } else {
+    box.innerHTML = '<div class="btn-row">' + links.map((d) => d.url
+      ? '<a class="btn" href="' + d.url + '" rel="noopener" target="_blank">' + window.NYP.icons.heart + " " + window.NYP.esc(d.label) + "</a>"
+      : '<div class="card" style="padding:12px 16px"><b>' + window.NYP.esc(d.label) + ":</b> <span style=\"font-family:var(--mono)\">" + window.NYP.esc(d.handle) + "</span></div>"
+    ).join("") + "</div>";
+  }
+  const repo = C.repoUrl;
+  document.getElementById("repoLink").innerHTML = repo ? '<a class="btn ghost small" href="' + repo + '/issues" rel="noopener">Report an issue</a>' : '<span class="muted">GitHub link coming soon.</span>';
+})();
+</script>
+</body>
+</html>

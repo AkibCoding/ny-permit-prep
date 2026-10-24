@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Guide · NY Permit Prep</title>
+<meta name="description" content="Chapter-by-chapter study guide for the New York learner permit test: key rules in plain English, diagrams, numbers to remember, and a quiz for each chapter.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@700;800&family=Overpass+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="study">
+<div class="hero"><div class="wrap" id="hero"></div></div>
+<main class="wrap" id="main"></main>
+
+<script src="assets/js/layout.js"></script>
+<script src="data/signs.js"></script>
+<script src="data/questions.js"></script>
+<script src="data/chapters.js"></script>
+<script src="assets/js/quiz.js"></script>
+<script>
+(function () {
+  const NYP = window.NYP;
+  const CH = NYP.CHAPTERS;
+  const hero = document.getElementById("hero");
+  const main = document.getElementById("main");
+  const n = parseInt(new URLSearchParams(location.search).get("c"), 10);
+  const chapter = CH.find((c) => c.n === n);
+  const prog = NYP.store.get().chapters;
+
+  function chapterNav(current) {
+    return '<nav class="chapter-nav" aria-label="Chapters">' + CH.map((c) => {
+      const done = prog[c.n] && prog[c.n].best / prog[c.n].total >= 0.8;
+      return '<a href="study.html?c=' + c.n + '"' + (c.n === current ? ' aria-current="page"' : "") + '><span class="dot' + (done ? " done" : "") + '"></span>Ch ' + c.n + "</a>";
+    }).join("") + "</nav>";
+  }
+
+  if (!chapter) {
+    // ---------- chapter list ----------
+    document.title = "Study Guide · NY Permit Prep";
+    hero.innerHTML = '<p class="eyebrow">Study guide</p><h1>Learn it chapter by chapter</h1><p class="lede">The written test covers chapters 4 to 11 of the NYS Driver’s Manual. Each chapter page has the key rules in plain English, diagrams, the numbers to remember, and a short quiz.</p>';
+    main.innerHTML = '<section><div class="grid grid-2">' + CH.map((c) => {
+      const p = prog[c.n];
+      const meta = p ? "Quiz best: " + p.best + "/" + p.total : "About " + c.mins + " min";
+      return '<a class="tile" href="study.html?c=' + c.n + '"><span class="eyebrow">Chapter ' + c.n + " · pages " + c.pages + "</span><h3>" + c.title + "</h3><p>" + c.intro + '</p><span class="meta">' + meta + "</span></a>";
+    }).join("") + "</div></section>" +
+    '<section class="card"><h2>Suggested order</h2><ol class="steps" style="margin-top:14px"><li><span><b>Start with chapter 4</b> and the <a href="signs.html">Road Signs page</a>. Signs are on every test.</span></li><li><span><b>Go through chapters 5 to 11.</b> Take each chapter quiz and reread the key points for anything you miss.</span></li><li><span><b>Take <a href="tests.html">Practice Tests 1–5</a>.</b> When you score 17+ consistently, you’re ready.</span></li></ol></section>';
+    return;
+  }
+
+  // ---------- one chapter ----------
+  document.title = "Chapter " + chapter.n + ": " + chapter.title + " · NY Permit Prep";
+  hero.innerHTML = chapterNav(chapter.n) +
+    '<p class="eyebrow" style="margin-top:8px">Chapter ' + chapter.n + " · manual pages " + chapter.pages + " · about " + chapter.mins + " min</p>" +
+    "<h1>" + chapter.title + '</h1><p class="lede">' + chapter.intro + "</p>";
+
+  const signs = chapter.signs.map((id) => NYP.SIGNS.find((s) => s.id === id)).filter(Boolean);
+  const quizQs = NYP.QUESTIONS.filter((q) => q.lvl === "easy" && q.ch === chapter.n);
+  const idx = CH.indexOf(chapter);
+  const prev = CH[idx - 1], next = CH[idx + 1];
+
+  main.innerHTML =
+    '<section><h2>Key points</h2><ul class="key-list" style="margin-top:14px">' + chapter.keys.map((k) => "<li>" + k + "</li>").join("") + "</ul>" +
+    (chapter.tip ? '<p class="callout" style="margin-top:14px">' + chapter.tip + "</p>" : "") + "</section>" +
+    (chapter.diagrams.length ? '<section><h2>See it</h2><div class="diagram-row" style="margin-top:14px">' + chapter.diagrams.map((d) => '<figure class="diagram" style="margin:0">' + NYP.DIAGRAMS[d.svg] + "<figcaption>" + d.cap + "</figcaption></figure>").join("") + "</div></section>" : "") +
+    (chapter.numbers.length ? '<section><h2>Numbers to remember</h2><div class="numbers" style="margin-top:14px">' + chapter.numbers.map((x) => "<div><b>" + x[0] + "</b><span>" + x[1] + "</span></div>").join("") + "</div></section>" : "") +
+    (signs.length ? '<section><h2>Signs in this chapter</h2><div class="chip-signs" style="margin-top:14px">' + signs.map((s) => '<div class="sign-card"><div class="art">' + s.svg + '</div><span class="name">' + NYP.esc(s.name) + '</span><span class="meaning">' + NYP.esc(s.meaning) + "</span></div>").join("") + '</div><p style="margin-top:10px"><a href="signs.html">See all signs &rarr;</a></p></section>' : "") +
+    '<section id="quiz"><h2>Chapter ' + chapter.n + " quiz</h2><p class=\"muted\" style=\"margin:6px 0 14px\">" + quizQs.length + ' questions. You’ll see the answer and explanation after each one.</p><div id="quizBox"><button type="button" class="btn" id="startQuiz">Start the quiz</button></div></section>' +
+    '<section><div class="pager">' +
+    (prev ? '<a class="btn ghost" href="study.html?c=' + prev.n + '">&larr; Chapter ' + prev.n + "</a>" : '<a class="btn ghost" href="study.html">&larr; All chapters</a>') +
+    (next ? '<a class="btn" href="study.html?c=' + next.n + '">Chapter ' + next.n + " &rarr;</a>" : '<a class="btn" href="tests.html">Take Practice Test 1 &rarr;</a>') +
+    "</div></section>";
+
+  const box = document.getElementById("quizBox");
+  function startQuiz() {
+    NYP.runQuiz(box, NYP.shuffle(quizQs), {
+      title: "Chapter " + chapter.n + " quiz",
+      onFinish: (r) => {
+        const p = NYP.store.get();
+        const prevBest = p.chapters[chapter.n] ? p.chapters[chapter.n].best : 0;
+        p.chapters[chapter.n] = { best: Math.max(prevBest, r.right), total: r.total };
+        NYP.store.set(p);
+      },
+      actions: [
+        next ? { label: "Next: Chapter " + next.n, href: "study.html?c=" + next.n } : { label: "Practice tests", href: "tests.html" },
+        { label: "Retake quiz", ghost: true, onClick: startQuiz }
+      ]
+    });
+  }
+  document.getElementById("startQuiz").addEventListener("click", startQuiz);
+})();
+</script>
+</body>
+</html>

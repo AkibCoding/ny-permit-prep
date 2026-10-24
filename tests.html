@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice Tests · NY Permit Prep</title>
+<meta name="description" content="Free NY learner permit practice tests: 5 real-exam-style tests with 100 unique questions, then unlimited smart random tests. Scored like the real DMV test.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@700;800&family=Overpass+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="tests">
+<div class="hero"><div class="wrap">
+  <p class="eyebrow">Practice tests</p>
+  <h1>Test yourself like the real thing</h1>
+  <p class="lede">Every test has 20 questions, including 4 road-sign questions. You pass with 14 correct and at least 2 of the 4 signs, just like the DMV test.</p>
+</div></div>
+
+<main class="wrap">
+  <div id="lists">
+    <section>
+      <h2>Real-style tests 1–5</h2>
+      <p class="muted" style="margin:6px 0 14px">Worded like DMV questions. Together these 5 tests cover 100 different questions, with no repeats.</p>
+      <div class="test-list" id="fixedTests"></div>
+    </section>
+
+    <section>
+      <h2>Unlimited tests</h2>
+      <p class="muted" style="margin:6px 0 14px">After Tests 1–5, keep practicing here. Random tests come back to questions you missed more often until you get them right.</p>
+      <div class="test-list" id="moreTests"></div>
+    </section>
+
+    <section>
+      <h2>Quick warm-up</h2>
+      <p class="muted" style="margin:6px 0 14px">Easier, straightforward questions from all chapters. Good for a first try.</p>
+      <div class="test-list" id="quickTests"></div>
+    </section>
+  </div>
+
+  <div id="runner" hidden>
+    <p style="margin-bottom:14px"><button type="button" class="btn ghost small" id="backBtn">&larr; All tests</button></p>
+    <div id="quizBox"></div>
+  </div>
+</main>
+
+<script src="assets/js/layout.js"></script>
+<script src="data/signs.js"></script>
+<script src="data/questions.js"></script>
+<script src="assets/js/quiz.js"></script>
+<script>
+(function () {
+  const NYP = window.NYP;
+  const Q = NYP.QUESTIONS;
+  const REAL = Q.filter((q) => q.lvl === "real");
+  const EASY = Q.filter((q) => q.lvl === "easy");
+  const lists = document.getElementById("lists");
+  const runner = document.getElementById("runner");
+  const box = document.getElementById("quizBox");
+
+  function status(key) {
+    const t = NYP.store.get().tests[key];
+    if (!t) return '<span class="pill">Not taken</span>';
+    return '<span class="pill ' + (t.lastPass ? "pass" : "fail") + '">Last ' + t.last + "/20 · Best " + t.best + "/20</span>";
+  }
+  function saveResult(key, r) {
+    const p = NYP.store.get();
+    const t = p.tests[key] || { best: 0, times: 0 };
+    t.best = Math.max(t.best, r.right); t.last = r.right; t.lastPass = r.pass; t.times += 1; t.date = new Date().toISOString().slice(0, 10);
+    p.tests[key] = t; NYP.store.set(p);
+  }
+  function row(title, sub, key, label) {
+    return '<div class="test-row"><div class="info"><b>' + title + "</b><span>" + sub + "</span>" + (key ? status(key) : "") + '</div><button type="button" class="btn small" data-start="' + (key || "") + '">' + label + "</button></div>";
+  }
+
+  function missedPool() {
+    const stats = NYP.store.get().stats;
+    return Q.filter((q) => stats[q.id] && stats[q.id].wrong > 0)
+      .sort((a, b) => stats[b.id].wrong - stats[a.id].wrong);
+  }
+  function smartWeight(q) {
+    const s = NYP.store.get().stats[q.id];
+    if (!s) return 2;            // never seen
+    if (s.wrong > 0) return 3 + s.wrong; // missed before
+    return 1;                    // seen and answered right
+  }
+
+  function renderLists() {
+    const p = NYP.store.get();
+    let html = "";
+    for (let t = 1; t <= 5; t++) html += row("Test " + t, "20 questions · 4 signs", "t" + t, p.tests["t" + t] ? "Retake" : "Start");
+    document.getElementById("fixedTests").innerHTML = html;
+
+    const doneFixed = [1, 2, 3, 4, 5].filter((t) => p.tests["t" + t]).length;
+    const missed = missedPool();
+    document.getElementById("moreTests").innerHTML =
+      row("Smart random test", doneFixed < 5 ? "Best after you finish Tests 1–5 (" + doneFixed + "/5 done)" : "New mix every time, weighted toward your misses", "smart", "Start") +
+      (missed.length
+        ? row("Review my mistakes", missed.length + " question" + (missed.length === 1 ? "" : "s") + " you've missed", "", "Review")
+        : '<div class="test-row"><div class="info"><b>Review my mistakes</b><span>Questions you miss will collect here.</span></div></div>');
+    document.getElementById("quickTests").innerHTML = row("Quick test", "20 easier questions · 4 signs", "quick", "Start");
+
+    lists.querySelectorAll("[data-start]").forEach((b) => b.addEventListener("click", () => start(b.dataset.start || "review")));
+  }
+
+  function start(key) {
+    let qs, title, exam = true;
+    if (/^t[1-5]$/.test(key)) {
+      const n = +key[1];
+      qs = NYP.shuffle(REAL.filter((q) => q.test === n));
+      title = "Practice Test " + n;
+    } else if (key === "smart") {
+      qs = NYP.buildExam(REAL, smartWeight);
+      title = "Smart random test";
+    } else if (key === "quick") {
+      qs = NYP.buildExam(EASY);
+      title = "Quick test";
+    } else {
+      qs = missedPool().slice(0, 20);
+      title = "Review my mistakes";
+      exam = false;
+    }
+    lists.hidden = true; runner.hidden = false;
+    const actions = [];
+    if (/^t[1-4]$/.test(key)) actions.push({ label: "Next: Test " + (+key[1] + 1), onClick: () => start("t" + (+key[1] + 1)) });
+    if (key === "t5" || key === "smart") actions.push({ label: "New smart random test", onClick: () => start("smart") });
+    actions.push({ label: "Try again", ghost: true, onClick: () => start(key) });
+    actions.push({ label: "All tests", ghost: true, onClick: back });
+    NYP.runQuiz(box, qs, {
+      title, exam,
+      onFinish: (r) => { if (key !== "review") saveResult(key, r); },
+      actions
+    });
+    runner.scrollIntoView({ block: "start" });
+  }
+  function back() { runner.hidden = true; lists.hidden = false; box.innerHTML = ""; renderLists(); window.scrollTo(0, 0); }
+  document.getElementById("backBtn").addEventListener("click", back);
+
+  renderLists();
+  const h = location.hash.replace("#", "");
+  if (/^(t[1-5]|smart|quick)$/.test(h)) start(h);
+})();
+</script>
+</body>
+</html>

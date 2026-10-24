@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Road Signs · NY Permit Prep</title>
+<meta name="description" content="Every road sign, traffic signal, lane light, pavement marking and hand signal from the New York Driver's Manual, with what each one means. Flashcard mode included.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Overpass:wght@700;800&family=Overpass+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="signs">
+<div class="hero"><div class="wrap">
+  <p class="eyebrow">Road signs</p>
+  <h1>Every sign and what it means</h1>
+  <p class="lede">The real test has 4 sign questions and you must get at least 2 right. Learn shapes and colors first; they tell you the type of sign even before you read it.</p>
+</div></div>
+
+<main class="wrap">
+  <section class="card">
+    <h2>Shapes and colors</h2>
+    <div class="numbers" style="margin-top:14px">
+      <div><b style="color:#C8102E">Octagon</b><span>STOP, always red</span></div>
+      <div><b style="color:#C8102E">Triangle</b><span>YIELD</span></div>
+      <div><b style="color:#B8860B">Yellow diamond</b><span>Warning: hazard ahead</span></div>
+      <div><b style="color:#D9741C">Orange</b><span>Work zone</span></div>
+      <div><b>White rectangle</b><span>A rule you must obey</span></div>
+      <div><b style="color:#0A7650">Green</b><span>Directions and distances</span></div>
+      <div><b style="color:#1E4FA0">Blue</b><span>Services</span></div>
+      <div><b style="color:#B8860B">Round yellow</b><span>Railroad ahead</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div class="filters" id="filters" role="group" aria-label="Filter by type"></div>
+      <label style="display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer">
+        <input type="checkbox" id="flash" style="width:20px;height:20px"> Flashcard mode
+      </label>
+    </div>
+    <p class="muted" id="flashHint" hidden style="margin-top:10px">Meanings are hidden. Say the answer, then tap a sign to check.</p>
+    <div class="sign-grid" id="grid" style="margin-top:16px"></div>
+  </section>
+
+  <section class="card">
+    <h3>Ready to test yourself?</h3>
+    <p class="muted" style="margin:6px 0 14px">Every practice test includes 4 sign questions, scored like the real test.</p>
+    <a class="btn" href="tests.html">Go to practice tests</a>
+  </section>
+</main>
+
+<script src="assets/js/layout.js"></script>
+<script src="data/signs.js"></script>
+<script>
+(function () {
+  const NYP = window.NYP;
+  const S = NYP.SIGNS;
+  const cats = ["All"].concat([...new Set(S.map((s) => s.cat))]);
+  let cat = "All";
+  const grid = document.getElementById("grid");
+  const filters = document.getElementById("filters");
+  const flash = document.getElementById("flash");
+
+  filters.innerHTML = cats.map((c) => '<button type="button" aria-pressed="' + (c === cat) + '" data-c="' + c + '">' + c + "</button>").join("");
+  filters.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    cat = b.dataset.c;
+    filters.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x.dataset.c === cat));
+    render();
+  });
+  flash.addEventListener("change", () => { document.getElementById("flashHint").hidden = !flash.checked; render(); });
+
+  function render() {
+    const list = S.filter((s) => cat === "All" || s.cat === cat);
+    grid.innerHTML = list.map((s) =>
+      '<button type="button" class="sign-card' + (flash.checked ? " hidden-meaning" : "") + '" aria-label="' + NYP.esc(s.name) + '">' +
+      '<span class="art">' + s.svg + "</span>" +
+      '<span class="cat">' + s.cat + "</span>" +
+      '<span class="name">' + (flash.checked ? "?" : NYP.esc(s.name)) + "</span>" +
+      '<span class="meaning">' + NYP.esc(s.meaning) + ' <span class="muted">(p. ' + s.ref + ")</span></span></button>"
+    ).join("");
+    grid.querySelectorAll(".sign-card").forEach((card, k) => {
+      card.addEventListener("click", () => {
+        if (!flash.checked) return;
+        card.classList.toggle("hidden-meaning");
+        card.querySelector(".name").textContent = card.classList.contains("hidden-meaning") ? "?" : list[k].name;
+      });
+    });
+  }
+  render();
+})();
+</script>
+</body>
+</html>
