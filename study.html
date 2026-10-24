@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Study Guide · NY Permit Prep</title>
 <meta name="description" content="Chapter-by-chapter study guide for the New York learner permit test: key rules in plain English, diagrams, numbers to remember, and a quiz for each chapter.">
+<link rel="canonical" href="https://akibcoding.github.io/ny-permit-prep/study.html" id="canon">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NY Permit Prep">
+<meta property="og:url" content="https://akibcoding.github.io/ny-permit-prep/study.html">
+<meta property="og:title" content="Study Guide · NY Permit Prep">
+<meta property="og:description" content="Chapter-by-chapter study guide for the New York learner permit test: key rules in plain English, diagrams, numbers to remember, and a quiz for each chapter.">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#0A7650">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,6 +60,14 @@
 
   // ---------- one chapter ----------
   document.title = "Chapter " + chapter.n + ": " + chapter.title + " · NY Permit Prep";
+  // Each chapter is its own page for search engines: own canonical address and description.
+  const BASE = "https://akibcoding.github.io/ny-permit-prep/";
+  const canon = document.getElementById("canon");
+  if (canon) canon.href = BASE + "study.html?c=" + chapter.n;
+  const desc = "NY permit test study guide, Chapter " + chapter.n + " (" + chapter.title + "): key rules, diagrams, numbers to remember and a free practice quiz.";
+  document.querySelector('meta[name="description"]').setAttribute("content", desc);
+  document.querySelectorAll('meta[property="og:title"]').forEach((m) => m.setAttribute("content", document.title));
+  document.querySelectorAll('meta[property="og:url"]').forEach((m) => m.setAttribute("content", BASE + "study.html?c=" + chapter.n));
   hero.innerHTML = chapterNav(chapter.n) +
     '<p class="eyebrow" style="margin-top:8px">Chapter ' + chapter.n + " · manual pages " + chapter.pages + " · about " + chapter.mins + " min</p>" +
     "<h1>" + chapter.title + '</h1><p class="lede">' + chapter.intro + "</p>";
