@@ -15,7 +15,7 @@ No login, no ads, no tracking. Progress is saved only in the visitor's own brows
 | Road signs | `signs.html` | All 47 signs/signals/markings/hand signals, filters, flashcard mode |
 | Practice tests | `tests.html` | Tests 1–5 (100 unique questions), smart random tests, mistake review, quick test |
 | Cheat sheet | `cheatsheet.html` | One-page revision sheet |
-| About | `about.html` | Disclaimer, privacy, donate |
+| About | `about.html` | Disclaimer, privacy, how to report mistakes |
 
 ## Questions
 
@@ -41,8 +41,7 @@ Smart random tests weight questions the visitor missed (and hasn't seen yet) mor
 
 ## Editing site settings
 
-`assets/js/config.js` holds the GitHub link and the donate options. **Never put a bank
-account or routing number there; it is public.**
+`assets/js/config.js` holds the GitHub link used on the About page.
 
 ## Run locally
 
@@ -58,7 +57,7 @@ python3 -m http.server 8000
 1. Push this folder to a GitHub repository.
 2. In the repo: **Settings → Pages → Build and deployment → Source: Deploy from a branch**,
    branch `main`, folder `/ (root)`.
-3. The site appears at `https://<username>.github.io/<repo>/` within a minute or two.
+3. The site appears at `https://akibcoding.github.io/ny-permit-prep/` within a minute or two.
    Every push to `main` updates it.
 4. Optional: add a custom domain under **Settings → Pages → Custom domain**.
 

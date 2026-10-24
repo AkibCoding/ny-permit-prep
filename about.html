@@ -34,12 +34,6 @@
     <p class="muted" style="margin-top:10px">Your quiz scores and missed questions are saved only in your own browser (local storage) so you can pick up where you left off. Nothing is sent to a server. Clearing your browser data, or using "Reset my progress" on the home page, erases it.</p>
   </section>
 
-  <section class="card" id="donate">
-    <h2>Support this site</h2>
-    <p class="muted" style="margin:10px 0 14px">The site is free and will stay free. If it helped you pass and you'd like to say thanks, you can chip in toward hosting and updates. It's completely optional.</p>
-    <div id="donateBox"></div>
-  </section>
-
   <section class="card">
     <h2>Found a mistake?</h2>
     <p class="muted" style="margin-top:10px">If a question or rule looks wrong or out of date, please report it on the project's GitHub page so it can be fixed for everyone.</p>
@@ -52,16 +46,6 @@
 <script>
 (function () {
   const C = window.NYP_CONFIG || {};
-  const box = document.getElementById("donateBox");
-  const links = (C.donate || []).filter((d) => d.url || d.handle);
-  if (!links.length) {
-    box.innerHTML = '<p class="callout">Donations aren’t set up yet. Thanks for thinking of it!</p>';
-  } else {
-    box.innerHTML = '<div class="btn-row">' + links.map((d) => d.url
-      ? '<a class="btn" href="' + d.url + '" rel="noopener" target="_blank">' + window.NYP.icons.heart + " " + window.NYP.esc(d.label) + "</a>"
-      : '<div class="card" style="padding:12px 16px"><b>' + window.NYP.esc(d.label) + ":</b> <span style=\"font-family:var(--mono)\">" + window.NYP.esc(d.handle) + "</span></div>"
-    ).join("") + "</div>";
-  }
   const repo = C.repoUrl;
   document.getElementById("repoLink").innerHTML = repo ? '<a class="btn ghost small" href="' + repo + '/issues" rel="noopener">Report an issue</a>' : '<span class="muted">GitHub link coming soon.</span>';
 })();

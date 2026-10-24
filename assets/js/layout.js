@@ -78,7 +78,7 @@
       "<p><b>NY Permit Prep</b> is a free study tool for the New York State Class D learner permit test. " +
       "It is not affiliated with or endorsed by the NYS Department of Motor Vehicles.</p>" +
       '<p>Content is based on the NYS Driver’s Manual (MV-21), last checked October 2026. Always check the <a href="https://dmv.ny.gov/new-york-state-drivers-manual-practice-tests" rel="noopener">official manual</a> for the latest rules.</p>' +
-      '<p><a href="about.html">About</a> · <a href="about.html#donate">Support this site</a> · <a href="about.html#privacy">Privacy</a></p>' +
+      '<p><a href="about.html">About</a> · <a href="about.html#privacy">Privacy</a> · <a href="https://github.com/AkibCoding/ny-permit-prep" rel="noopener">GitHub</a></p>' +
       "</div>";
     document.body.append(footer);
   }
