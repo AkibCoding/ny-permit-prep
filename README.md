@@ -3,6 +3,8 @@
 A free study site for the New York State Class D learner permit (written) test.
 No login, no ads, no tracking. Progress is saved only in the visitor's own browser.
 
+Link: https://akibcoding.github.io/ny-permit-prep/
+
 **Not affiliated with the NYS DMV.** Content is paraphrased from the NYS Driver's Manual
 (MV-21), and every question cites the manual page it comes from.
 
